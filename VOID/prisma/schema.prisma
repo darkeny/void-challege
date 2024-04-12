@@ -28,12 +28,15 @@ model User {
 
 model Posts {
   id       String     @id @default(uuid())
-  title    String     @unique
+  title    String    
   content  String?
+  image String?
   published Boolean @default(false)
   category Category[]
   User     User?      @relation(fields: [userId], references: [id])
   userId   String?
+
+  @@unique([title, userId])
 }
 
 model Category {

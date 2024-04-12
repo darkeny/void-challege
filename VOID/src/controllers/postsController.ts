@@ -4,7 +4,7 @@ import { prisma } from '../database/prisma';
 const postsRouter = Router();
 
 // Route to find all posts in the system
-postsRouter.get('/allPosts', async (request, response) => {
+postsRouter.get('/posts', async (request, response) => {
     try {
         const post = await prisma.posts.findMany();
     response.json(post);
@@ -14,7 +14,7 @@ postsRouter.get('/allPosts', async (request, response) => {
 });
 
 // Route to create a post
-postsRouter.post('/createPost', async (request, response) => {
+postsRouter.post('/posts', async (request, response) => {
     try {
         const { title, content, published, userId } = request.body;
         
@@ -26,12 +26,10 @@ postsRouter.post('/createPost', async (request, response) => {
         if (!userExists) {
             return response.status(404).json({ error: 'User not found.' });
         }
-
         const existingPost = await prisma.posts.findFirst({
             where:{
                 userId: userId,
                 title: title,
-                content: content
             }
         });
 
@@ -39,6 +37,7 @@ postsRouter.post('/createPost', async (request, response) => {
             return response.status(400).json({ error: 'Post already exists for this user.'})
         }
 
+        
         const post = await prisma.posts.create({
             data: {
                 title,
@@ -52,16 +51,18 @@ postsRouter.post('/createPost', async (request, response) => {
             payload: post
         });
     } catch (error) {
-        response.status(500).json({ error: 'Failed to create post.' });
+        response.status(500).json({ error: 'Failed to create post.'});
+        console.log(error);
+        
     }
 });
 
 // Route to update a post
-postsRouter.put('/updatePosts', async (request, response) => {
+postsRouter.put('/posts', async (request, response) => {
     try {
-        const { title, content } = request.body;
+        const { title, content, userId } = request.body;
         const post = await prisma.posts.update({
-            where: { title: title },
+            where: { title_userId: {title, userId} },
             data: { content: content }
         });
         response.json({
@@ -74,11 +75,11 @@ postsRouter.put('/updatePosts', async (request, response) => {
 });
 
 // Route to delete a delete
-postsRouter.delete('/deletePosts', async (request, response) => {
+postsRouter.delete('/posts', async (request, response) => {
     try {
-        const { title } = request.body;
+        const { title, userId} = request.body;
         const post = await prisma.posts.delete({
-            where: { title: title }
+            where: { title_userId: {title, userId}}
         });
         response.json({
             message: "Post Deleted",
@@ -86,6 +87,8 @@ postsRouter.delete('/deletePosts', async (request, response) => {
         });
     } catch (error) {
         response.status(500).json({ error: 'Failed to delete post.' });
+        console.log(error);
+        
     }
 });
 

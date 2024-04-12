@@ -11,8 +11,8 @@ server.use(json)
 server.use(router);
 
 
-router.use('/users', userRouter);
-router.use('/posts', postsRouter)
+router.use(userRouter);
+router.use(postsRouter)
 
 export { router };
 
