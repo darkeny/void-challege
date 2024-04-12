@@ -27,12 +27,23 @@ postsRouter.post('/createPost', async (request, response) => {
             return response.status(404).json({ error: 'User not found.' });
         }
 
+        const existingPost = await prisma.posts.findFirst({
+            where:{
+                userId: userId,
+                title: title,
+                content: content
+            }
+        });
+
+        if (existingPost){
+            return response.status(400).json({ error: 'Post already exists for this user.'})
+        }
+
         const post = await prisma.posts.create({
             data: {
                 title,
                 content,
                 published,
-                // Associar o post ao usuário pelo ID
                 User: { connect: { id: userId } }
             }
         });
