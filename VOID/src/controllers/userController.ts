@@ -3,8 +3,11 @@ import { prisma } from '../database/prisma';
 
 const userRouter = Router();
 
-// Route to find all users in the system
-userRouter.get('/allUsers', async (request, response) => {
+
+ /**
+  * Route to find all users in the system
+  */
+userRouter.get('/users', async (request, response) => {
     try {
         const users = await prisma.user.findMany();
         response.json(users);
@@ -13,8 +16,11 @@ userRouter.get('/allUsers', async (request, response) => {
     }
 });
 
-// Route to create a user
-userRouter.post('/createUser', async (request, response) => {
+
+/**
+ * Route to create a users
+ */
+userRouter.post('/users', async (request, response) => {
     try {
         const { name, email } = request.body;
         const user = await prisma.user.create({
@@ -29,8 +35,11 @@ userRouter.post('/createUser', async (request, response) => {
     }
 });
 
-// Route to update a user
-userRouter.put('/updateUser', async (request, response) => {
+
+/**
+ * Route to update a user
+ */
+userRouter.put('/users', async (request, response) => {
     try {
         const { email, name} = request.body;
         const user = await prisma.user.update({
@@ -46,8 +55,11 @@ userRouter.put('/updateUser', async (request, response) => {
     }
 });
 
-// Route to delete a user
-userRouter.delete('/deleteUser', async (request, response) => {
+
+/**
+ * Route to delete a users
+ */
+userRouter.delete('/users', async (request, response) => {
     try {
         const { email } = request.body;
         const user = await prisma.user.delete({

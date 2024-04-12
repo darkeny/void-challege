@@ -13,11 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Type {
-  BUSINESS
-  SPORTS
-  EDUCATION
-}
 
 model User {
   id    String  @id @default(uuid())
@@ -28,17 +23,20 @@ model User {
 
 model Posts {
   id       String     @id @default(uuid())
-  title    String     @unique
+  title    String    
   content  String?
+  image String?
   published Boolean @default(false)
-  category Category[]
+  category Category @default(NEWS)
   User     User?      @relation(fields: [userId], references: [id])
   userId   String?
+
+  @@unique([title, userId])
 }
 
-model Category {
-  id      String  @id @default(uuid())
-  type    Type @default(BUSINESS)
-  Posts   Posts?  @relation(fields: [postsId], references: [id])
-  postsId String?
+enum Category {
+  SPORTS
+  BUSINESS
+  EDUCATION
+  NEWS
 }

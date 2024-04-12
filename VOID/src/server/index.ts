@@ -2,7 +2,7 @@ import Express from "express";
 import { router } from './router'
 import parser from "body-parser";
 import { userRouter } from "../controllers/userController"
-import { postsRouter } from "../controllers/postsContrller";
+import { postsRouter } from "../controllers/postsController";
 
 const server = Express()
 const json = parser.json()
@@ -11,8 +11,8 @@ server.use(json)
 server.use(router);
 
 
-router.use('/users', userRouter);
-router.use('/posts', postsRouter)
+router.use(userRouter);
+router.use(postsRouter)
 
 export { router };
 
