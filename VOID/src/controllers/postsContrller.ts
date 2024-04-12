@@ -17,12 +17,28 @@ postsRouter.get('/allPosts', async (request, response) => {
 postsRouter.post('/createPost', async (request, response) => {
     try {
         const { title, content, published, userId } = request.body;
-        const posts = await prisma.posts.create({
-            data: { title, content, published, userId}
+        
+        // Verificar se o usuário existe
+        const userExists = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!userExists) {
+            return response.status(404).json({ error: 'User not found.' });
+        }
+
+        const post = await prisma.posts.create({
+            data: {
+                title,
+                content,
+                published,
+                // Associar o post ao usuário pelo ID
+                User: { connect: { id: userId } }
+            }
         });
         response.json({
             message: "Post Created",
-            payload: posts
+            payload: post
         });
     } catch (error) {
         response.status(500).json({ error: 'Failed to create post.' });
