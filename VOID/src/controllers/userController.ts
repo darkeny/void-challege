@@ -3,7 +3,10 @@ import { prisma } from '../database/prisma';
 
 const userRouter = Router();
 
-// Route to find all users in the system
+
+ /**
+  * Route to find all users in the system
+  */
 userRouter.get('/users', async (request, response) => {
     try {
         const users = await prisma.user.findMany();
@@ -13,7 +16,10 @@ userRouter.get('/users', async (request, response) => {
     }
 });
 
-// Route to create a user
+
+/**
+ * Route to create a users
+ */
 userRouter.post('/users', async (request, response) => {
     try {
         const { name, email } = request.body;
@@ -29,7 +35,10 @@ userRouter.post('/users', async (request, response) => {
     }
 });
 
-// Route to update a user
+
+/**
+ * Route to update a user
+ */
 userRouter.put('/users', async (request, response) => {
     try {
         const { email, name} = request.body;
@@ -46,7 +55,10 @@ userRouter.put('/users', async (request, response) => {
     }
 });
 
-// Route to delete a user
+
+/**
+ * Route to delete a users
+ */
 userRouter.delete('/users', async (request, response) => {
     try {
         const { email } = request.body;
