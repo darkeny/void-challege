@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { prisma } from '../database/prisma';
+import { prisma } from '../provider/prisma';
 
 const userRouter = Router();
 
@@ -7,9 +7,14 @@ const userRouter = Router();
  /**
   * Route to find all users in the system
   */
-userRouter.get('/users', async (request, response) => {
+userRouter.get('/users/:id?', async (request, response) => {
     try {
-        const users = await prisma.user.findMany();
+        const id = request.params.id
+        const users = await prisma.user.findMany({
+            where: {
+                id: id
+            }
+        });
         response.json(users);
     } catch (error) {
         response.status(500).json({ error: 'Failed to retrieve users.' });

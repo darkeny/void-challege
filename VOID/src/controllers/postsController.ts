@@ -1,14 +1,19 @@
 import { Router } from "express";
-import { prisma } from '../database/prisma';
+import { prisma } from '../provider/prisma';
 
 const postsRouter = Router();
 
 /**
  * Route to find all posts 
  */
-postsRouter.get('/posts', async (request, response) => {
+postsRouter.get('/posts/:userId?', async (request, response) => {
     try {
-        const post = await prisma.posts.findMany();
+        const userId = request.params.userId
+        const post = await prisma.posts.findMany({
+            where: {
+                userId: userId
+            }
+        });
         response.json(post);
     } catch (error) {
         response.status(500).json({ error: 'Failed to retrieve post.' });
@@ -25,7 +30,6 @@ postsRouter.post('/posts', async (request, response) => {
 
         if (Array.isArray(request.body)) {
             for (const post of request.body) {
-                console.log(post.category);
                 if (post.category !== 'BUSINESS' && post.category !== 'EDUCATION' && post.category !== 'SPORTS') {
                     return response.status(400).json({ message: 'Invalid Category' })
                 }    
@@ -82,7 +86,6 @@ postsRouter.post('/posts', async (request, response) => {
 
     } catch (error: any) {
         response.status(500).json({ error: 'Failed to create post.'  });
-        console.log(error);
 
     }
 });
