@@ -96,10 +96,17 @@ postsRouter.post('/posts', async (request, response) => {
  */
 postsRouter.put('/posts', async (request, response) => {
     try {
-        const { title, content, userId } = request.body;
+        const { title, content, published, image, category, userId} = request.body;
         const post = await prisma.posts.update({
             where: { title_userId: { title, userId } },
-            data: { content: content }
+            data: { 
+                content: content,
+                title: title,
+                published: published,
+                image: image,
+                category: category
+
+            }
         });
         response.json({
             message: "Post Updated",

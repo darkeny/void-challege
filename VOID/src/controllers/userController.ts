@@ -5,7 +5,7 @@ const userRouter = Router();
 
 
  /**
-  * Route to find all users in the system
+  * Route to find all users or that matches specified id
   */
 userRouter.get('/users/:id?', async (request, response) => {
     try {
@@ -23,11 +23,42 @@ userRouter.get('/users/:id?', async (request, response) => {
 
 
 /**
+ * Route to find all posts of the specified user
+ */
+
+userRouter.get('/users/posts/:userId', async (request, response) => {
+    try {
+        const { userId } = request.params
+        const posts = await prisma.posts.findMany({
+            where: {
+                userId: userId
+            }
+        });
+        response.status(201).json(posts)
+    } catch (error) {
+        response.status(500).json({ error: 'Failed to retrieve posts.' });
+    }
+})
+
+/**
  * Route to create a users
  */
+
+
 userRouter.post('/users', async (request, response) => {
+
+    const { name, email } = request.body;
+
+    const userExists = await prisma.user.findUnique({
+        where: { email }
+    });
+
+    if (userExists) {
+        return response.status(400).json({ error: 'User already exists for this email: ' + email });
+    }
+
     try {
-        const { name, email } = request.body;
+        
         const user = await prisma.user.create({
             data: { name, email }
         });
@@ -42,15 +73,21 @@ userRouter.post('/users', async (request, response) => {
 
 
 /**
- * Route to update a user
+ * Route to update a user that matches specified id
  */
-userRouter.put('/users', async (request, response) => {
+userRouter.put('/users/:userId', async (request, response) => {
     try {
-        const { email, name} = request.body;
+        const { userId } = request.params;
+        const { name, email } = request.body;
         const user = await prisma.user.update({
-            where: { email: email },
-            data: { name: name }
-        });
+            where: {
+                id: userId,
+            },
+            data: {
+                name: name,
+                email: email
+            }
+        })
         response.json({
             message: "User Updated",
             payload: user
@@ -64,11 +101,13 @@ userRouter.put('/users', async (request, response) => {
 /**
  * Route to delete a users
  */
-userRouter.delete('/users', async (request, response) => {
+userRouter.delete('/users/:userId', async (request, response) => {
     try {
-        const { email } = request.body;
+        const userId = request.params.userId;
         const user = await prisma.user.delete({
-            where: { email: email }
+            where: {
+                id: userId
+             }
         });
         response.json({
             message: "User Deleted",
